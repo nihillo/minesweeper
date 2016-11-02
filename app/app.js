@@ -6,7 +6,45 @@ class Minesweeper {
 		this.board = new Board(this);
 
 		this.board.dropMines();
-		this.board.dropCounters();
+		this.board.setCounters();
+
+		this.finished = false;
+	}
+
+	isValid(row, col) {
+		var valid = false;
+	
+		if (this.board.cells[row] 					&&
+			this.board.cells[row][col] 				&&
+			!this.board.cells[row][col].uncovered)   {
+			valid = true;
+		}
+
+		return valid;
+	}
+
+	uncover(row, col) {
+		if (this.isValid(row, col)) {
+
+			this.board.cells[row][col].uncovered = true;
+			
+
+			if (this.board.cells[row][col].mine) {
+
+				this.finished = true;
+				return 'mine';
+
+			} else {
+				this.finished = this.checkAllUncovered();
+				return this.board.cells[row][col].counter;
+			}
+
+
+		}
+	}
+
+	checkAllUncovered() {
+		return this.board.checkAllUncovered();
 	}
 }
 
@@ -25,6 +63,7 @@ class Board {
 				this.cells[row].push(new Cell());
 			}
 		}
+
 	}
 
 
@@ -41,13 +80,13 @@ class Board {
 	}
 
 
-	dropCounters() {
+	setCounters() {
 		this.cells.forEach((row, rowIndex, matrix) => {
 			row.forEach((cell, cellIndex) => {
 				
 				if (!cell.mine) { // If there is not a mine in the cell
 
-					// Build 3x3 submatrix around the cell, getting null positions where there are no cells (borders)
+					// Build 3x3 submatrix around the cell, getting null positions where there are no cells (beyond borders)
 					var submatrix = [];
 		
 					for (let i = -1; i < 2; i++) {
@@ -60,16 +99,15 @@ class Board {
 
 					// Count the mines inside the submatrix
 					var count = 0;
-
 					submatrix.forEach((smRow) => {
-						row.forEach((smCell) => {
-							if (smCell.mine !== false) {
+						smRow.forEach((smCell) => {
+							if (smCell && smCell.mine) {
 								count++;
 							}
 						});
 					});
 
-					// Finally fix the counter in the correct cell property
+					// Finally set the counter in the correct cell property
 					cell.counter = count;
 
 				}
@@ -77,6 +115,27 @@ class Board {
 
 			});
 		});
+	}
+
+
+	get coveredCells() {
+		
+		var count = 0;
+
+		this.cells.forEach((row) => {
+			row.forEach((cell) => {
+				if (!cell.mine && !cell.uncovered) {
+					count++;
+				}
+			});
+		});
+
+		return count;
+	}
+
+	checkAllUncovered() {
+
+		return this.coveredCells === 0;
 	}
 }
 
