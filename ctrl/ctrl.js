@@ -33,18 +33,18 @@ class CtrlGame {
 	}
 
 
-	uncover(row, col, clicked) {
+	uncover(row, col, clicked = null, propagateResult = null) {
 
 		if (this.game.isValid(row, col)) {
 			var element = this.view.getCell(row, col);
 
-			var value = this.game.uncover(row, col);
-			this.view.uncover(element, clicked, value);
+			var response = this.game.uncover(row, col, propagateResult);
+			this.view.uncover(element, clicked, response.value);
 			
 
 
-			// Uncover contiguous cells if value === 0
-			if (value === 0) {
+			// Uncover contiguous cells if response.value === 0
+			if (response.value === 0) {
 
 				// Build 3x3 submatrix around the cell, getting null positions where there are no cells (beyond borders)
 				var submatrix = [];
@@ -68,24 +68,23 @@ class CtrlGame {
 			}
 
 
+			// Mark all mines if win
+			if (response.result == 'win') {
+				this.markAll();
+			}
 
-			// Uncover all if value == 'mine'
-			if (value == 'mine') {
+
+			// Uncover all if lose
+			else if (response.result == 'lose') {
 				this.game.board.cells.forEach((row, rowIndex) => {
 					row.forEach((cell, cellIndex) => {
 						if (cell) {
-							this.uncover(rowIndex, cellIndex); // Recursion for every cell
+							this.uncover(rowIndex, cellIndex, null, 'lose'); // Recursion for every cell
 						}
 					});
 				});
 			}
 
-
-
-			// Mark all mines if all non-mines are uncovered
-			if (this.checkAllUncovered()) {
-				this.markAll();
-			}
 
 		}
 	}

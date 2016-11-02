@@ -9,6 +9,7 @@ class Minesweeper {
 		this.board.setCounters();
 
 		this.finished = false;
+		this.result = null;
 	}
 
 	isValid(row, col) {
@@ -23,8 +24,12 @@ class Minesweeper {
 		return valid;
 	}
 
-	uncover(row, col) {
+	uncover(row, col, propagateResult = null) {
+		var response = {};
+
 		if (this.isValid(row, col)) {
+
+			response.valid = true;
 
 			this.board.cells[row][col].uncovered = true;
 			
@@ -32,15 +37,30 @@ class Minesweeper {
 			if (this.board.cells[row][col].mine) {
 
 				this.finished = true;
-				return 'mine';
+				response.value = 'mine';
+				response.finished = true;
+				response.result = 'lose';
 
 			} else {
 				this.finished = this.checkAllUncovered();
-				return this.board.cells[row][col].counter;
+				response.value = this.board.cells[row][col].counter;
+
+				if (this.finished ) {
+					response.finished = true;
+					response.result = 'win';
+				}
 			}
 
 
+		} else {
+			response.valid = false;
 		}
+
+		if (propagateResult !== null) {
+			response.result = propagateResult;
+		}
+
+		return response;
 	}
 
 	checkAllUncovered() {
