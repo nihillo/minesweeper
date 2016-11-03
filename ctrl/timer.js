@@ -56,32 +56,3 @@ class Timer {
 		clearTimeout(this.cycleRun);
 	}
 }
-
-
-
-function updateTimer (htmlElement, minutes, seconds) {
-	window.setTimeout(function(){
-		seconds ++;
-		if (seconds == 60) {
-			minutes++;
-			seconds = 0;
-		}
-
-		showTimer(htmlElement, minutes, seconds);
-		updateTimer(htmlElement, minutes, seconds);
-	},
-	1000);
-}
-
-function showTimer(htmlElement, minutes, seconds) {
-	var secondsStr, minutesStr;
-
-	if (seconds.toString().length == 1) {
-		secondsStr = '0' + seconds;
-	} else {
-		secondsStr = seconds;
-	}
-	
-	var timeStr = `${minutes}:${secondsStr}`;
-	htmlElement.innerHTML = timeStr;
-}

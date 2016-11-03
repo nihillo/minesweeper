@@ -92,7 +92,7 @@ class Minesweeper {
 			var best = localStorage.getItem('bestTime');
 
 			if (best) {
-				return JSON.parse(best);
+				return best;
 			}
 
 		} else {
