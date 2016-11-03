@@ -57,12 +57,12 @@ class CtrlGame {
 	}
 
 
-	uncover(row, col, clicked = null, propagateResult = null) {
+	uncover(row, col, clicked = null) {
 
 		if (this.game.isValid(row, col)) {
 			var element = this.view.getCell(row, col);
 
-			var response = this.game.uncover(row, col, propagateResult);
+			var response = this.game.uncover(row, col);
 			this.view.uncover(element, clicked, response.value);
 			
 
@@ -150,7 +150,7 @@ class CtrlGame {
 			this.game.board.cells.forEach((row, rowIndex) => {
 				row.forEach((cell, cellIndex) => {
 					if (cell) {
-						this.uncover(rowIndex, cellIndex, null, 'lose'); // Recursion for every cell
+						this.uncover(rowIndex, cellIndex); // Recursion for every cell
 					}
 				});
 			});

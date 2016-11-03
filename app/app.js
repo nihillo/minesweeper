@@ -28,7 +28,7 @@ class Minesweeper {
 		return valid;
 	}
 
-	uncover(row, col, propagateResult = null) {
+	uncover(row, col) {
 		var response = {};
 
 		if (this.isValid(row, col)) {
@@ -40,19 +40,17 @@ class Minesweeper {
 
 			if (this.board.cells[row][col].mine) {
 
-				this.finished = true;
+				this.finishGame('lose');
 				response.value = 'mine';
-				response.finished = true;
-				response.result = 'lose';
+				// response.finished = true;
+				// response.result = 'lose';
 
 			} else {
-				this.finished = this.checkAllUncovered();
+				
 				response.value = this.board.cells[row][col].counter;
 
-				if (this.finished ) {
-					response.finished = true;
-					response.result = 'win';
-
+				if (this.checkAllUncovered()) {
+					this.finishGame('win');
 				}
 			}
 
@@ -61,17 +59,23 @@ class Minesweeper {
 			response.valid = false;
 		}
 
-		if (propagateResult !== null) {
-			response.result = propagateResult;
-		}
 
-		this.result = response.result;
+		response.finished = this.finished;
+		response.result = this.result;
+
 
 		return response;
 	}
 
 	checkAllUncovered() {
 		return this.board.checkAllUncovered();
+	}
+
+	finishGame(result) {
+		if (this.finished == false) {
+			this.finished = true;
+			this.result = result;
+		}
 	}
 
 	setTimeTotal(time) {
