@@ -1,15 +1,21 @@
 class CtrlGame {
 	constructor() {
 		this.game = new Minesweeper ();
-		this.view = new ViewGame(this.game.board.cells);
+		this.view = new ViewGame(this.game.board.cells, this.game.mines);
 
 		this.generateEvents();
 	}
 
-	bindEvents(element, row, col){
+	bindCellEvents(element, row, col){
 		element.addEventListener('click', (event) => {
 			if (!this.game.finished) {
-				this.uncover(row, col, event.target);
+
+				if (event.target.hasAttribute('data-marked')) {
+					this.toggleMark(event.target);
+				} else {
+					this.uncover(row, col, event.target, null);
+				}
+				
 			}
 		});
 
@@ -24,12 +30,25 @@ class CtrlGame {
 		});
 	}
 
+	playAgainEvents() {
+		this.view.playAgain.addEventListener('click', (event) => {
+			if (!event.target.hasAttribute('disabled')) {
+				location.reload();
+			}
+		});
+	}
+
 	generateEvents() {
+
+		// Cell events
 		for (let row = 0; row < this.game.size; row++){
 			for (let col = 0; col < this.game.size; col++){
-				this.bindEvents(this.view.getCell(row, col), row, col);
+				this.bindCellEvents(this.view.getCell(row, col), row, col);
 			}
 		}
+
+		// Play again events
+		this.playAgainEvents();
 	}
 
 
@@ -67,24 +86,10 @@ class CtrlGame {
 				});
 			}
 
-
-			// Mark all mines if win
-			if (response.result == 'win') {
-				this.markAll();
+			// Trigger finish functions if game is finished
+			if (response.finished) {
+				this.finishGame(response);
 			}
-
-
-			// Uncover all if lose
-			else if (response.result == 'lose') {
-				this.game.board.cells.forEach((row, rowIndex) => {
-					row.forEach((cell, cellIndex) => {
-						if (cell) {
-							this.uncover(rowIndex, cellIndex, null, 'lose'); // Recursion for every cell
-						}
-					});
-				});
-			}
-
 
 		}
 	}
@@ -103,8 +108,11 @@ class CtrlGame {
 	markAll() {
 		this.game.board.cells.forEach((row, rowIndex) => {
 			row.forEach((cell, cellIndex) => {
-				if (cell && cell.mine) {
-					this.view.mark(this.view.getCell(rowIndex, cellIndex));
+
+				var element = this.view.getCell(rowIndex, cellIndex);
+
+				if (cell && cell.mine && !element.hasAttribute('data-marked')) {
+					this.view.mark(element);
 				}
 			});
 		});
@@ -113,6 +121,35 @@ class CtrlGame {
 
 	checkAllUncovered() {
 		return this.game.checkAllUncovered();
+	}
+
+
+	finishGame(response) {
+
+		// Enable play again button 
+		this.view.playAgain.removeAttribute('disabled');
+
+
+		// Mark all mines if win
+		if (response.result == 'win') {
+			this.markAll();
+
+			this.view.showEmo('win');
+		}
+
+
+		// Uncover all if lose
+		else if (response.result == 'lose') {
+			this.game.board.cells.forEach((row, rowIndex) => {
+				row.forEach((cell, cellIndex) => {
+					if (cell) {
+						this.uncover(rowIndex, cellIndex, null, 'lose'); // Recursion for every cell
+					}
+				});
+			});
+
+			this.view.showEmo('lose');
+		}
 	}
 }
 
