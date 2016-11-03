@@ -1,7 +1,11 @@
 class Minesweeper {
-	constructor() {
+	constructor(timeStarted) {
 		this.size = 8;
 		this.mines = 10;
+
+		this.timeStarted = timeStarted;
+		this.timeTotal = null;
+		this.timeBest = this.getBestTime();
 
 		this.board = new Board(this);
 
@@ -48,6 +52,7 @@ class Minesweeper {
 				if (this.finished ) {
 					response.finished = true;
 					response.result = 'win';
+
 				}
 			}
 
@@ -60,11 +65,44 @@ class Minesweeper {
 			response.result = propagateResult;
 		}
 
+		this.result = response.result;
+
 		return response;
 	}
 
 	checkAllUncovered() {
 		return this.board.checkAllUncovered();
+	}
+
+	setTimeTotal(time) {
+		this.timeTotal = time;
+
+		// Record time in localStorage if win and timeTotal less than timeBest
+		if ((this.result == 'win') && ((this.timeTotal < this.timeBest) || !this.timeBest)) {
+			this.recordBestTime(time);
+		}
+	}
+
+	getBestTime() {
+		if (typeof(Storage) !== "undefined") {
+			var best = localStorage.getItem('bestTime');
+
+			if (best) {
+				return JSON.parse(best);
+			}
+
+		} else {
+		    console.log('Local storage not supported');
+		}
+	}
+
+
+	recordBestTime(time) {
+		if (typeof(Storage) !== "undefined") {
+			localStorage.setItem('bestTime', time);
+		} else {
+		    console.log('Local storage not supported');
+		}
 	}
 }
 

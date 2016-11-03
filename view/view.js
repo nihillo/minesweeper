@@ -50,8 +50,8 @@ class ViewGame {
 		this.infoPanel.innerHTML = `
 			<div class="marks-left" id="marks-left"></div>
 			<div class="times">
-				<div class="time" id="time">0:14<span class="time-miliseconds" id="time-miliseconds">.256</span></div>
-				<div class="best-time"><span class="best-time-label">BEST TIME: </span><span id="best-time">0:09</span><span class="time-miliseconds" id="best-time-miliseconds">.432</span></div>
+				<div class="time" id="time"><span id="time-m">0</span>:<span id="time-s">00</span>.<span class="time-c" id="time-c">00</span></div>
+				<div class="best-time"><span class="best-time-label">BEST TIME: </span><span id="best-time-m">9</span>:<span id="best-time-s">59</span>.<span class="time-c" id="best-time-c">99</span></div>
 			</div>
 		`;
 
@@ -116,6 +116,17 @@ class ViewGame {
 		}		
 	}
 
+	showTime(time) {
+		document.getElementById('time-m').innerHTML = time.m;
+		document.getElementById('time-s').innerHTML = time.s;
+		document.getElementById('time-c').innerHTML = time.c;
+	}
+
+	showBestTime(time) {
+		document.getElementById('best-time-m').innerHTML = time.m;
+		document.getElementById('best-time-s').innerHTML = time.s;
+		document.getElementById('best-time-c').innerHTML = time.c;
+	}
 
 	showEmo(state) {
 		var emo = '';

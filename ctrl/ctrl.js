@@ -1,7 +1,12 @@
 class CtrlGame {
 	constructor() {
-		this.game = new Minesweeper ();
+		this.timer = new Timer(this, 10);
+		this.game = new Minesweeper (this.timer.timeZero);
 		this.view = new ViewGame(this.game.board.cells, this.game.mines);
+
+		if (this.game.timeBest) {
+			this.view.showBestTime(this.timer.toMSC(this.game.timeBest));
+		}
 
 		this.generateEvents();
 	}
@@ -125,6 +130,8 @@ class CtrlGame {
 
 
 	finishGame(response) {
+		// Register total time
+		this.game.setTimeTotal(this.timer.time);
 
 		// Enable play again button 
 		this.view.playAgain.removeAttribute('disabled');
@@ -149,6 +156,13 @@ class CtrlGame {
 			});
 
 			this.view.showEmo('lose');
+		}
+	}
+
+
+	pushTime(time) {
+		if (!this.game.finished) {
+			this.view.showTime(time);
 		}
 	}
 }

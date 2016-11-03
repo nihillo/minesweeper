@@ -46,6 +46,7 @@ button {
 	color: inherit;
 	margin: 0 auto;
 	padding: 4px;
+	margin-top: 4px;
 	width: 254px;
 	background-color: #eee;
 	min-width: 50px;
@@ -87,6 +88,7 @@ button[disabled] {
 
 
 .infopanel {
+	text-align: left;
 	display: inline-block;
 	font-size: 16px;
  	margin-top: 4px;
@@ -100,20 +102,29 @@ button[disabled] {
 }
 
 .marks-left {
+	width: 58px;
 	font-size: 22px;
 	float: left;
 	padding: 16px;
 }
 
 .time, .best-time {
-	float: right;
 	padding: 4px 8px;
+}
+
+.time {
+	position: relative;
+	left: 128px;
+}
+
+.best-time {
+	float: right;
 }
 
 .best-time-label {
 	font-size: 10px;
 }
 
-.time-miliseconds {
+.time-c {
 	font-size: 10px;
 }
